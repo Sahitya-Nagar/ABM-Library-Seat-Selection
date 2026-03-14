@@ -2,8 +2,6 @@
 
 A professional Agent-Based Model built with **Python** and the **Mesa** framework to simulate and analyze student seat-selection behavior in a university library.
 
-![Library ABM Screenshot](https://raw.githubusercontent.com/project-placeholder/link-to-screenshot.png) *(Note: Add your own screenshot here!)*
-
 ## 📑 Overview
 
 This simulation explores how environmental factors (seat types) and individual student preferences (Quiet, Window, Charging, or Regular) affect:
