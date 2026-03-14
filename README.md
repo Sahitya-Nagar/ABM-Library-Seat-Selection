@@ -30,7 +30,7 @@ This simulation explores how environmental factors (seat types) and individual s
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/library-abm.git
+   git clone https://github.com/Sahitya-Nagar/ABM-Library-Seat-Selection.git
    cd library-abm
    ```
 
