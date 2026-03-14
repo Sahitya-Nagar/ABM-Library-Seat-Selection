@@ -1,0 +1,173 @@
+
+================================================================
+  LIBRARY SEAT SELECTION - AGENT-BASED MODEL (ABM)
+  Presentation Explanation
+================================================================
+
+----------------------------------------------------------------
+1. WHAT IS AN AGENT-BASED MODEL (ABM)?
+----------------------------------------------------------------
+An Agent-Based Model (ABM) is a computer simulation made up of
+individual "agents" that each follow their own rules. Instead
+of writing one big equation to describe a system, we let many
+small agents interact, and observe what patterns emerge from
+their behaviour.
+
+In this project:
+  - The LIBRARY is the environment (a 20x20 grid).
+  - STUDENTS and SEATS are the agents.
+  - We watch what happens as students arrive, search for seats,
+    study, and eventually leave.
+
+----------------------------------------------------------------
+2. THE ENVIRONMENT
+----------------------------------------------------------------
+The library is represented as a 20x20 grid (400 cells total).
+Each cell can hold a seat and/or a student at the same time.
+
+The top-left corner (0,0) is the ENTRANCE — this is where all
+students appear when they arrive.
+
+You can control the library layout using sliders:
+  - Total Capacity   : How many seats exist in the library.
+  - Charging Seats   : How many seats have charging sockets.
+  - Quiet Seats      : How many seats are in quiet zones.
+  - Students per Step: How many students arrive each time step.
+
+The rest of the seats (after quiet and charging are placed)
+are split between window seats and normal seats automatically.
+
+----------------------------------------------------------------
+3. THE AGENTS
+----------------------------------------------------------------
+
+  A) SEAT AGENT (seat.py)
+  ------------------------
+  - A seat does NOT move. It simply sits in one cell of the grid.
+  - Each seat has a TYPE: quiet, window, charging, or normal.
+  - Each seat has a STATUS: occupied (True) or empty (False).
+  - Colour on screen:
+      Blue   = Quiet seat
+      Cyan   = Window seat
+      Orange = Charging seat
+      Grey   = Normal seat
+      Red+S  = Any seat that is currently occupied by a student
+
+  B) STUDENT AGENT (student_agent.py)
+  -------------------------------------
+  - Each student has:
+      * A PREFERENCE (quiet / window / charging / normal)
+        assigned randomly when they arrive.
+      * A STUDY TIME (random number between 10 and 50 steps)
+        which counts down each step while seated.
+      * A SATISFACTION SCORE (0, 50, or 100).
+
+----------------------------------------------------------------
+4. HOW THE MODEL RUNS - STEP BY STEP
+----------------------------------------------------------------
+
+Every time the simulation ticks forward by ONE STEP, this happens:
+
+  PHASE 1 - STUDENTS ARRIVE
+  --------------------------
+  A set number of new students (controlled by the slider) spawn
+  at the entrance (0,0). Each gets a random preference type and
+  a random study time.
+
+  PHASE 2 - ALL AGENTS ACT
+  -------------------------
+  Every student agent runs its own logic:
+
+    IF THE STUDENT IS NOT SEATED:
+      - They scan ALL seats in the library.
+      - If NO seats are available anywhere:
+          * The student is REJECTED (counted as rejected).
+          * They leave the simulation immediately.
+      - If seats ARE available:
+          * They check if any match their preference type.
+          * If YES → They pick a random preferred seat.
+                     Satisfaction score = 100.
+          * If NO  → They settle for any available seat.
+                     Satisfaction score = 50.
+          * The chosen seat is marked as occupied.
+          * The student moves visually to that seat on the grid.
+
+    IF THE STUDENT IS ALREADY SEATED:
+      - Their study time counts down by 1.
+      - If study time reaches 0:
+          * They LEAVE their seat (seat becomes empty again).
+          * They are removed from the simulation.
+
+  PHASE 3 - DATA IS RECORDED
+  ---------------------------
+  After all agents have acted, the simulation records:
+    - Seat Utilization (%)
+    - Average Satisfaction
+    - Rejected count
+  These values are plotted on the live charts.
+
+----------------------------------------------------------------
+5. THE CHARTS (X-AXIS = STEP NUMBER / TIME)
+----------------------------------------------------------------
+
+  Chart 1: SEAT UTILIZATION (%)
+  - Shows how full the library is at each step.
+  - 100% means every seat is taken; 0% means the library is empty.
+
+  Chart 2: AVERAGE SATISFACTION
+  - Shows the average satisfaction of currently seated students.
+  - 100 = all seated students got their preferred seat.
+  - 50  = all seated students had to settle for a different seat.
+  - Values between 50 and 100 = a mix of both.
+
+  Chart 3: REJECTED
+  - Shows the CUMULATIVE total of students turned away.
+  - This number only goes UP (never down) because it counts
+    every rejection since the simulation started.
+  - Normally stays at 0. It spikes when the library is full.
+
+----------------------------------------------------------------
+6. HOW TO TRIGGER INTERESTING BEHAVIOUR
+----------------------------------------------------------------
+
+By default, the library never fills up because students leave
+almost as fast as new ones arrive. To see the Rejected graph spike:
+
+  Step 1: Set "Students per step" slider to 10 (maximum).
+  Step 2: Set "Total Capacity" slider to 50 (minimum).
+  Step 3: Click RESET, then click START.
+  Result: The library hits 100% capacity in about 5 steps,
+          and every new student is immediately rejected!
+
+This demonstrates a key insight of ABM:
+  Individual rules (students looking for seats) produce
+  EMERGENT behaviour (library congestion and rejection spikes)
+  that is hard to predict from equations alone.
+
+----------------------------------------------------------------
+7. THE FILES AND THEIR ROLES
+----------------------------------------------------------------
+
+  seat.py           - Defines the Seat agent (type + occupied status)
+  student_agent.py  - Defines the Student agent (arrive, search, leave)
+  library_model.py  - Sets up the grid, places seats, runs each step,
+                      collects data
+  server.py         - Sets up the visual browser interface, sliders,
+                      and charts
+  run.py            - Launches the simulation server in the browser
+
+----------------------------------------------------------------
+8. KEY CONCEPTS DEMONSTRATED
+----------------------------------------------------------------
+
+  - EMERGENCE      : Complex library behaviour from simple rules.
+  - AGENT AUTONOMY : Each student makes its own decision independently.
+  - PREFERENCE      : Students have types and seek matching seat types.
+  - RESOURCE SCARCITY: When seats run out, rejection rates skyrocket.
+  - SATISFACTION   : A measurable outcome of preference matching.
+  - DATA COLLECTION: Metrics tracked over time using Mesa's
+                     DataCollector module.
+
+================================================================
+  END OF EXPLANATION
+================================================================
